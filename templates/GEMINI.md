@@ -1,0 +1,7 @@
+## Shared AI skills & instructions (Gemini)
+
+Đọc và tuân thủ file `AGENTS.md` (phần "Shared AI skills & instructions").
+
+- Instruction dùng chung: `.copilot/instructions/*.instructions.md` — áp dụng file có `applyTo` khớp file đang sửa, đọc file khác khi `description` khớp task.
+- Skill dùng chung: `.copilot/skills/<skill-name>/SKILL.md` — khi task khớp `description`, đọc `SKILL.md` + `references/` rồi làm theo.
+- Skill `coding-convention` (nếu có) phải được đọc trước khi sửa code.

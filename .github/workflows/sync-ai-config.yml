@@ -1,0 +1,83 @@
+name: Sync AI skills to project repos
+
+# Khi có commit thay đổi skill / instruction / template / script trên main:
+# checkout từng repo dự án (submodule trong projects/), copy file theo ai-sync.config.json,
+# rồi commit + push lên branch chore/sync-ai-skills và tạo / cập nhật PR ở repo dự án.
+#
+# Yêu cầu secret AI_SYNC_TOKEN: Personal Access Token (fine-grained) có quyền
+#   Contents: Read and write + Pull requests: Read and write trên tất cả repo dự án.
+# (GITHUB_TOKEN mặc định không có quyền ghi sang repo khác.)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.copilot/**'
+      - 'templates/**'
+      - 'scripts/**'
+      - 'ai-sync.config.json'
+      - '.gitmodules'
+      - '.github/workflows/sync-ai-config.yml'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Tên target trong ai-sync.config.json (để trống = tất cả)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Chỉ in ra thay đổi, không commit / push'
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: sync-ai-config
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout shared repo
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure git auth for project repos
+        env:
+          AI_SYNC_TOKEN: ${{ secrets.AI_SYNC_TOKEN }}
+        run: |
+          if [ -z "$AI_SYNC_TOKEN" ]; then
+            echo "::error::Chưa cấu hình secret AI_SYNC_TOKEN"
+            exit 1
+          fi
+          # actions/checkout đã set extraheader bằng GITHUB_TOKEN cho github.com, cần bỏ để dùng PAT cho submodule
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          git config --global url."https://x-access-token:${AI_SYNC_TOKEN}@github.com/".insteadOf "https://github.com/"
+
+      - name: Sync skills / instructions / configs
+        env:
+          AI_SYNC_TOKEN: ${{ secrets.AI_SYNC_TOKEN }}
+          INPUT_TARGET: ${{ github.event.inputs.target }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          ARGS=()
+          if [ -n "$INPUT_TARGET" ]; then
+            ARGS+=(--target "$INPUT_TARGET")
+          fi
+          if [ "$INPUT_DRY_RUN" = "true" ]; then
+            ARGS+=(--dry-run)
+          else
+            ARGS+=(--push)
+          fi
+          node scripts/sync-ai-config.js "${ARGS[@]}"

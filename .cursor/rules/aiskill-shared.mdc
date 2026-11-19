@@ -1,0 +1,7 @@
+---
+description: Quy tắc làm việc trong repo shared AI skills
+globs:
+alwaysApply: true
+---
+
+Đọc và tuân thủ `AGENTS.md`. Skill dùng chung: `.copilot/skills/`, instruction dùng chung: `.copilot/instructions/`.

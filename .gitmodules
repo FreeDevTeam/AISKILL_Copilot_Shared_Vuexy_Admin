@@ -1,0 +1,5 @@
+[submodule "projects/KiemDinhOto_AdminWebSite"]
+	path = projects/KiemDinhOto_AdminWebSite
+	url = https://github.com/FreeDevTeam/KiemDinhOto_AdminWebSite.git
+	branch = Release/v5.0.0
+	shallow = true
