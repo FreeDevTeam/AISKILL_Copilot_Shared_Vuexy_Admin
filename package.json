@@ -1,0 +1,16 @@
+{
+  "name": "aiskill-copilot-shared-vuexy-admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared AI skills / instructions / agent configs cho các dự án Admin Website (Vuexy React)",
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "sync": "node scripts/sync-ai-config.js",
+    "sync:dry": "node scripts/sync-ai-config.js --dry-run",
+    "sync:push": "node scripts/sync-ai-config.js --push",
+    "add-repo": "node scripts/sync-ai-config.js add"
+  }
+}

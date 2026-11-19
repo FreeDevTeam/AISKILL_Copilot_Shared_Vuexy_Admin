@@ -1,0 +1,28 @@
+{
+  "$comment": "Cấu hình đồng bộ AI skill/instruction/config sang các repo dự án. url + branch của từng target lấy từ .gitmodules. mode: overwrite (ghi đè file trùng tên) | block (chỉ thay block giữa marker) | json-merge (merge key JSON). Không mode nào xoá file của repo đích.",
+  "targets": [
+    {
+      "name": "KiemDinhOto_AdminWebSite",
+      "path": "projects/KiemDinhOto_AdminWebSite",
+      "enabled": true
+    }
+  ],
+  "mappings": [
+    { "from": ".copilot/instructions", "to": ".copilot/instructions", "mode": "overwrite" },
+    { "from": ".copilot/skills", "to": ".copilot/skills", "mode": "overwrite" },
+    { "from": ".copilot/skills", "to": ".claude/skills", "mode": "overwrite", "exclude": ["README.MD"] },
+    { "from": "templates/AGENTS.md", "to": "AGENTS.md", "mode": "block" },
+    { "from": "templates/CLAUDE.md", "to": "CLAUDE.md", "mode": "block" },
+    { "from": "templates/GEMINI.md", "to": "GEMINI.md", "mode": "block" },
+    { "from": "templates/.github/copilot-instructions.md", "to": ".github/copilot-instructions.md", "mode": "block" },
+    { "from": "templates/.cursor/rules/aiskill-shared.mdc", "to": ".cursor/rules/aiskill-shared.mdc", "mode": "overwrite" },
+    { "from": "templates/.vscode/settings.json", "to": ".vscode/settings.json", "mode": "json-merge" }
+  ],
+  "git": {
+    "syncBranch": "chore/sync-ai-skills",
+    "pushMode": "pr",
+    "commitMessage": "chore(ai): sync shared AI skills, instructions and agent configs",
+    "authorName": "ai-skill-sync-bot",
+    "authorEmail": "ai-skill-sync-bot@users.noreply.github.com"
+  }
+}
